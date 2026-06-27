@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -34,6 +35,7 @@ export default function BlogCard({
   readTime,
   className,
 }: BlogCardProps) {
+  const [imgError, setImgError] = useState(false);
   return (
     <motion.article
       className={cn(
@@ -59,7 +61,7 @@ export default function BlogCard({
       <Link href={`/blog/${slug}`} className="block">
         {/* Image */}
         <div className="relative h-48 overflow-hidden rounded-t-2xl">
-          {featuredImage ? (
+          {featuredImage && !imgError ? (
             <>
               <Image
                 src={featuredImage}
@@ -67,6 +69,7 @@ export default function BlogCard({
                 fill
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                onError={() => setImgError(true)}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/30 to-transparent" />
             </>
