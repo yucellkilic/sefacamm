@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Clock, ArrowUpRight } from 'lucide-react';
 import Badge from './Badge';
-import Avatar from './Avatar';
 import { cn } from '@/lib/utils';
 
 export interface BlogCardProps {
@@ -17,7 +16,6 @@ export interface BlogCardProps {
   category: string;
   author: {
     name: string;
-    avatar?: string;
   };
   publishedAt: string;
   readTime?: number;
@@ -39,7 +37,7 @@ export default function BlogCard({
   return (
     <motion.article
       className={cn(
-        'group relative overflow-hidden rounded-2xl border border-border bg-surface transition-all',
+        'group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-surface transition-all',
         className
       )}
       initial={{ opacity: 0, y: 24 }}
@@ -58,7 +56,7 @@ export default function BlogCard({
         }}
       />
 
-      <Link href={`/blog/${slug}`} className="block">
+      <Link href={`/blog/${slug}`} className="flex flex-1 flex-col">
         {/* Image */}
         <div className="relative h-48 overflow-hidden rounded-t-2xl">
           {featuredImage && !imgError ? (
@@ -98,16 +96,22 @@ export default function BlogCard({
         </div>
 
         {/* Content */}
-        <div className="p-5">
+        <div className="flex flex-1 flex-col p-5">
           <h3 className="mb-2.5 line-clamp-2 text-lg font-bold text-text-primary transition-colors duration-200 group-hover:text-primary leading-snug">
             {title}
           </h3>
-          <p className="mb-5 line-clamp-2 text-sm leading-relaxed text-text-secondary">{excerpt}</p>
+          <p className="mb-5 line-clamp-2 text-sm leading-relaxed text-text-secondary flex-1">{excerpt}</p>
 
           {/* Meta */}
-          <div className="flex items-center justify-between border-t border-border/50 pt-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border/50 pt-4">
             <div className="flex items-center gap-2">
-              <Avatar src={author.avatar} alt={author.name} size="sm" />
+              <Image
+                src="/logo.png"
+                alt="Sefa Çam"
+                width={32}
+                height={32}
+                className="h-8 w-8 rounded-full object-contain ring-2 ring-border"
+              />
               <span className="text-xs font-medium text-text-secondary">{author.name}</span>
             </div>
             <div className="flex items-center gap-3 text-xs text-text-tertiary">

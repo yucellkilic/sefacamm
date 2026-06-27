@@ -108,7 +108,6 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
                     category={post.category?.name || 'Genel'}
                     author={{
                       name: post.author?.name || 'Sefa Çam',
-                      avatar: post.author?.avatar_url || undefined,
                     }}
                     publishedAt={formatDate(post.published_at || post.created_at)}
                     readTime={calculateReadingTime(post.content)}

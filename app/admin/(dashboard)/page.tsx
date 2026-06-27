@@ -1,4 +1,4 @@
-import { FileText, Users, Mail, FileEdit, TrendingUp } from 'lucide-react';
+import { FileText, Users, Mail, FileEdit, TrendingUp, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase/client';
 
@@ -9,11 +9,13 @@ async function getDashboardStats() {
       { count: draftPosts },
       { count: subscribers },
       { count: messages },
+      { count: pendingComments },
     ] = await Promise.all([
       supabase.from('posts').select('*', { count: 'exact', head: true }).eq('is_published', true),
       supabase.from('posts').select('*', { count: 'exact', head: true }).eq('is_published', false),
       supabase.from('subscribers').select('*', { count: 'exact', head: true }),
       supabase.from('messages').select('*', { count: 'exact', head: true }),
+      supabase.from('comments').select('*', { count: 'exact', head: true }).eq('is_approved', false),
     ]);
 
     return {
@@ -21,6 +23,7 @@ async function getDashboardStats() {
       draftPosts: draftPosts || 0,
       subscribers: subscribers || 0,
       messages: messages || 0,
+      pendingComments: pendingComments || 0,
     };
   } catch (error) {
     console.error('Failed to fetch dashboard stats:', error);
@@ -29,6 +32,7 @@ async function getDashboardStats() {
       draftPosts: 0,
       subscribers: 0,
       messages: 0,
+      pendingComments: 0,
     };
   }
 }
@@ -64,6 +68,13 @@ export default async function AdminDashboard() {
       icon: Mail,
       color: 'text-info',
       bgColor: 'bg-info/10',
+    },
+    {
+      title: 'Onay Bekleyen Yorum',
+      value: stats.pendingComments,
+      icon: MessageSquare,
+      color: 'text-warning',
+      bgColor: 'bg-warning/10',
     },
   ];
 
@@ -145,6 +156,21 @@ export default async function AdminDashboard() {
                 Abone Listesi
               </h3>
               <p className="text-sm text-text-secondary">Aboneleri görüntüle</p>
+            </div>
+          </Link>
+
+          <Link
+            href="/admin/comments"
+            className="group flex items-center gap-4 rounded-xl border border-border bg-surface p-6 transition-all hover:border-primary hover:bg-surface-hover"
+          >
+            <div className="rounded-lg bg-warning/10 p-3">
+              <MessageSquare className="h-6 w-6 text-warning" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-text-primary group-hover:text-primary">
+                Yorumlar
+              </h3>
+              <p className="text-sm text-text-secondary">Yorumları yönet</p>
             </div>
           </Link>
         </div>

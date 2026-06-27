@@ -324,7 +324,6 @@ export default async function PostPage({ params }: { params: { slug: string } })
                   category={rp.category?.name || 'Genel'}
                   author={{
                     name: rp.author?.name || 'Sefa Çam',
-                    avatar: rp.author?.avatar_url || undefined,
                   }}
                   publishedAt={formatDate(rp.published_at || rp.created_at)}
                   readTime={calculateReadingTime(rp.content)}

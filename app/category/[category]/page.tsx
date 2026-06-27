@@ -112,7 +112,6 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                     category={post.category?.name || category.name}
                     author={{
                       name: post.author?.name || 'Sefa Çam',
-                      avatar: post.author?.avatar_url || undefined,
                     }}
                     publishedAt={formatDate(post.published_at || post.created_at)}
                     readTime={calculateReadingTime(post.content)}

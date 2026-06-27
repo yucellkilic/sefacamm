@@ -9,7 +9,8 @@ import {
   Edit, 
   LogOut,
   Menu,
-  X 
+  X,
+  MessageSquare 
 } from 'lucide-react';
 import { useState } from 'react';
 import Image from 'next/image';
@@ -25,6 +26,7 @@ const navItems: NavItem[] = [
   { label: 'Dashboard', href: '/admin', icon: <LayoutDashboard className="h-5 w-5" /> },
   { label: 'Yazılar', href: '/admin/posts', icon: <FileText className="h-5 w-5" /> },
   { label: 'Aboneler', href: '/admin/subscribers', icon: <Users className="h-5 w-5" /> },
+  { label: 'Yorumlar', href: '/admin/comments', icon: <MessageSquare className="h-5 w-5" /> },
   { label: 'Hero Editör', href: '/admin/hero-editor', icon: <Edit className="h-5 w-5" /> },
 ];
 

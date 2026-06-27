@@ -266,7 +266,6 @@ export default async function Home() {
                       category={post.category?.name || 'Genel'}
                       author={{
                         name: post.author?.name || 'Sefa Çam',
-                        avatar: post.author?.avatar_url || undefined,
                       }}
                       publishedAt={formatDate(post.published_at || post.created_at)}
                       readTime={calculateReadingTime(post.content)}
@@ -316,7 +315,6 @@ export default async function Home() {
                         category={post.category?.name || block.category.name}
                         author={{
                           name: post.author?.name || 'Sefa Çam',
-                          avatar: post.author?.avatar_url || undefined,
                         }}
                         publishedAt={formatDate(post.published_at || post.created_at)}
                         readTime={calculateReadingTime(post.content)}
