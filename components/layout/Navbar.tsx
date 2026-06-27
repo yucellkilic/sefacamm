@@ -79,7 +79,7 @@ export default function Navbar() {
       className={cn(
         'fixed top-0 z-50 w-full transition-colors duration-200',
         isScrolled || isOpen
-          ? 'backdrop-blur-xl bg-background/95 shadow-[0_1px_0_rgba(255,215,0,0.08)]'
+          ? 'backdrop-blur-xl bg-background shadow-[0_1px_0_rgba(255,215,0,0.08)]'
           : 'bg-transparent'
       )}
       animate={{ y: isHidden ? -100 : 0 }}
@@ -188,7 +188,7 @@ export default function Navbar() {
             <>
               {/* Backdrop */}
               <motion.div
-                className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+                className="fixed inset-0 z-40 bg-black/70 md:hidden"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -198,14 +198,14 @@ export default function Navbar() {
               
               {/* Menu Panel */}
               <motion.div
-                className="fixed inset-y-0 right-0 z-[45] w-[85vw] max-w-sm bg-background/98 backdrop-blur-2xl shadow-2xl md:hidden"
+                className="fixed inset-0 z-[45] bg-background md:hidden"
                 initial={{ x: '100%' }}
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
               >
                 {/* Menu content container */}
-                <div className="flex h-full flex-col pt-24 pb-8 px-8">
+                <div className="flex h-full flex-col pt-28 pb-8 px-8">
                   {/* Navigation Links */}
                   <nav className="flex flex-col gap-2">
                     {navLinks.map((link, index) => (
