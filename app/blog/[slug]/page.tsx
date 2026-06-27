@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import ReactMarkdown from 'react-markdown';
 import { supabase } from '@/lib/supabase/client';
 import { generatePostMetadata } from '@/lib/seo/metadata';
-import { generateBlogPostingSchema, generateFAQSchema } from '@/lib/seo/schemas';
+import { generateBlogPostingSchema, generateBreadcrumbListSchema, generateFAQSchema } from '@/lib/seo/schemas';
 import { calculateReadingTime } from '@/utils/readingTime';
 import { formatDate } from '@/utils/dateFormatter';
 import Avatar from '@/components/ui/Avatar';
@@ -93,6 +93,12 @@ export default async function PostPage({ params }: { params: { slug: string } })
   const faqItems = (post.faq_schema as FAQItem[] | null) || [];
   const faqSchema = faqItems.length > 0 ? generateFAQSchema(faqItems) : null;
   const blogSchema = generateBlogPostingSchema(post, post.author ?? undefined);
+  const breadcrumbSchema = generateBreadcrumbListSchema([
+    { name: 'Ana Sayfa', url: 'https://sefacam.com/' },
+    { name: 'Blog', url: 'https://sefacam.com/blog' },
+    ...(post.category ? [{ name: post.category.name, url: `https://sefacam.com/category/${post.category.slug}` }] : []),
+    { name: post.title, url: postUrl },
+  ]);
 
   return (
     <>
@@ -100,6 +106,10 @@ export default async function PostPage({ params }: { params: { slug: string } })
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       {faqSchema && (
         <script

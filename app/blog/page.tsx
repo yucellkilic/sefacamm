@@ -7,6 +7,7 @@ import Pagination from '@/components/ui/Pagination';
 import Sidebar from '@/components/ui/Sidebar';
 import CategoryFilter from '@/components/ui/CategoryFilter';
 import { generatePageMetadata } from '@/lib/seo/metadata';
+import { generateCollectionPageSchema } from '@/lib/seo/schemas';
 import { calculateReadingTime } from '@/utils/readingTime';
 import { formatDate } from '@/utils/dateFormatter';
 import type { PostWithRelations } from '@/types';
@@ -20,12 +21,19 @@ interface BlogPageProps {
   searchParams: { page?: string; category?: string };
 }
 
-export async function generateMetadata(): Promise<Metadata> {
-  return generatePageMetadata(
-    'Blog',
+export async function generateMetadata({ searchParams }: BlogPageProps): Promise<Metadata> {
+  const currentPage = parseInt(searchParams.page || '1', 10);
+  const base = generatePageMetadata(
+    currentPage > 1 ? `Blog - Sayfa ${currentPage}` : 'Blog',
     'Teknoloji, yazılım ve web geliştirme üzerine güncel makaleler ve rehberler. Tüm yazıları keşfedin.',
-    '/blog'
+    currentPage > 1 ? `/blog?page=${currentPage}` : '/blog'
   );
+
+  if (currentPage > 1) {
+    base.robots = { index: false, follow: true };
+  }
+
+  return base;
 }
 
 async function getBlogData(page: number, categorySlug?: string) {
@@ -87,9 +95,19 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       getAllCategories(),
     ]);
 
+  const collectionSchema = posts.length > 0
+    ? generateCollectionPageSchema(posts, currentPage, totalPages)
+    : null;
+
   return (
-    <div className="container mx-auto px-6 py-12">
-      {/* Header */}
+    <>
+      {collectionSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
+        />
+      )}
+      <div className="container mx-auto px-6 py-12">
       <header className="mb-10">
         <div className="mb-2 flex items-center gap-3">
           <BookOpen className="h-8 w-8 text-primary" />
@@ -178,5 +196,6 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         </aside>
       </div>
     </div>
+    </>
   );
 }

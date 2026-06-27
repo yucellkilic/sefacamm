@@ -33,31 +33,40 @@ const socialLinks = [
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isHidden, setIsHidden] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isScrollingDown, setIsScrollingDown] = useState(false);
   const pathname = usePathname();
+
+  // Mobil menü açıkken navbar'ı asla gizleme
+  const isHidden = !isOpen && isScrollingDown && lastScrollY > 100;
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       setIsScrolled(currentScrollY > 20);
-
-      if (!isOpen) {
-        if (currentScrollY > lastScrollY && currentScrollY > 100) {
-          setIsHidden(true);
-        } else {
-          setIsHidden(false);
-        }
+      
+      // Aşağı scroll kontrolü
+      if (currentScrollY > lastScrollY && currentScrollY > 80) {
+        setIsScrollingDown(true);
+      } else {
+        setIsScrollingDown(false);
       }
+      
       setLastScrollY(currentScrollY);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY, isOpen]);
+  }, [lastScrollY]);
 
   useEffect(() => {
-    document.body.style.overflow = isOpen ? 'hidden' : '';
+    if (isOpen) {
+      // Mobil menü açıkken scroll'u engelle ve navbar'ı göster
+      document.body.style.overflow = 'hidden';
+      setIsScrollingDown(false);
+    } else {
+      document.body.style.overflow = '';
+    }
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
@@ -68,15 +77,13 @@ export default function Navbar() {
   return (
     <motion.header
       className={cn(
-        'fixed top-0 z-50 w-full transition-all duration-300',
-        isScrolled
-          ? 'backdrop-blur-xl bg-background/85 shadow-[0_1px_0_rgba(255,215,0,0.08)]'
-          : 'bg-transparent',
-        isHidden && '-translate-y-full'
+        'fixed top-0 z-50 w-full transition-colors duration-200',
+        isScrolled || isOpen
+          ? 'backdrop-blur-xl bg-background/95 shadow-[0_1px_0_rgba(255,215,0,0.08)]'
+          : 'bg-transparent'
       )}
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.4, ease: 'easeOut' }}
+      animate={{ y: isHidden ? -100 : 0 }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
     >
       <nav
         className="container mx-auto flex items-center justify-between px-6 py-3"
@@ -162,78 +169,118 @@ export default function Navbar() {
         {/* Mobile Menu Button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="relative z-50 text-text-primary md:hidden"
+          className="relative z-[60] text-text-primary transition-transform hover:scale-110 active:scale-95 md:hidden"
           aria-label={isOpen ? 'Menüyü kapat' : 'Menüyü aç'}
           aria-expanded={isOpen}
         >
-          {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          <motion.div
+            initial={false}
+            animate={{ rotate: isOpen ? 180 : 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </motion.div>
         </button>
 
         {/* Mobile Menu */}
-        <AnimatePresence>
+        <AnimatePresence mode="wait">
           {isOpen && (
-            <motion.div
-              className="fixed inset-0 z-40 bg-background/95 backdrop-blur-xl md:hidden"
-              initial={{ opacity: 0, x: '100%' }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: '100%' }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="flex h-full flex-col items-center justify-center gap-8">
-                {navLinks.map((link, index) => (
-                  <motion.div
-                    key={link.href}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.08 }}
-                  >
-                    <Link
-                      href={link.href}
-                      className={cn(
-                        'text-3xl font-bold transition-colors hover:text-primary',
-                        pathname === link.href ? 'text-primary' : 'text-text-primary'
-                      )}
-                    >
-                      {link.label}
-                    </Link>
-                  </motion.div>
-                ))}
+            <>
+              {/* Backdrop */}
+              <motion.div
+                className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={() => setIsOpen(false)}
+              />
+              
+              {/* Menu Panel */}
+              <motion.div
+                className="fixed inset-y-0 right-0 z-[45] w-[85vw] max-w-sm bg-background/98 backdrop-blur-2xl shadow-2xl md:hidden"
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              >
+                {/* Menu content container */}
+                <div className="flex h-full flex-col pt-24 pb-8 px-8">
+                  {/* Navigation Links */}
+                  <nav className="flex flex-col gap-2">
+                    {navLinks.map((link, index) => (
+                      <motion.div
+                        key={link.href}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.06, duration: 0.3 }}
+                      >
+                        <Link
+                          href={link.href}
+                          className={cn(
+                            'block py-3 px-4 rounded-lg text-2xl font-bold transition-all hover:bg-primary/10 hover:text-primary hover:translate-x-1',
+                            pathname === link.href 
+                              ? 'text-primary bg-primary/5' 
+                              : 'text-text-primary'
+                          )}
+                        >
+                          {link.label}
+                          {pathname === link.href && (
+                            <motion.div
+                              className="mt-1 h-1 w-12 bg-primary rounded-full"
+                              layoutId="mobile-underline"
+                            />
+                          )}
+                        </Link>
+                      </motion.div>
+                    ))}
+                  </nav>
 
-                {/* Mobile social links */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: navLinks.length * 0.08 + 0.1 }}
-                  className="mt-4 flex items-center gap-6"
-                >
-                  <a
-                    href="https://www.youtube.com/@sefacamm?si=0-ZsgvpVhYqgEX12"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="YouTube"
-                    className="text-text-secondary hover:text-red-400 transition-colors"
+                  {/* Spacer */}
+                  <div className="flex-1" />
+
+                  {/* Mobile social links */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: navLinks.length * 0.06 + 0.1, duration: 0.3 }}
+                    className="space-y-4"
                   >
-                    <Youtube className="h-7 w-7" />
-                  </a>
-                  <a
-                    href="https://www.instagram.com/kimbusefa34?igsh=MTBkaWk0YjhnOWxuaQ%3D%3D"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Instagram"
-                    className="text-text-secondary hover:text-pink-400 transition-colors"
-                  >
-                    <Instagram className="h-7 w-7" />
-                  </a>
-                  <Link
-                    href="/search"
-                    className="text-text-secondary hover:text-primary transition-colors"
-                    aria-label="Arama"
-                  >
-                    <Search className="h-7 w-7" />
-                  </Link>
-                </motion.div>
-              </div>
-            </motion.div>
+                    {/* Divider */}
+                    <div className="h-px w-full bg-border/50" />
+                    
+                    {/* Social icons */}
+                    <div className="flex items-center justify-center gap-6">
+                      <a
+                        href="https://www.youtube.com/@sefacamm?si=0-ZsgvpVhYqgEX12"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="YouTube"
+                        className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10 text-red-400 transition-all hover:bg-red-500/20 hover:scale-110 active:scale-95"
+                      >
+                        <Youtube className="h-6 w-6" />
+                      </a>
+                      <a
+                        href="https://www.instagram.com/kimbusefa34?igsh=MTBkaWk0YjhnOWxuaQ%3D%3D"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Instagram"
+                        className="flex h-12 w-12 items-center justify-center rounded-full bg-pink-500/10 text-pink-400 transition-all hover:bg-pink-500/20 hover:scale-110 active:scale-95"
+                      >
+                        <Instagram className="h-6 w-6" />
+                      </a>
+                      <Link
+                        href="/search"
+                        className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary transition-all hover:bg-primary/20 hover:scale-110 active:scale-95"
+                        aria-label="Arama"
+                      >
+                        <Search className="h-6 w-6" />
+                      </Link>
+                    </div>
+                  </motion.div>
+                </div>
+              </motion.div>
+            </>
           )}
         </AnimatePresence>
       </nav>
