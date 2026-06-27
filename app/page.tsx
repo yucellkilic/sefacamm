@@ -31,6 +31,7 @@ async function getHomeData() {
     { data: featuredPosts },
     { data: popularPosts },
     { data: categories },
+    { data: siteSettings },
   ] = await Promise.all([
     supabase
       .from('posts')
@@ -48,12 +49,25 @@ async function getHomeData() {
       .from('categories')
       .select('id, name, slug')
       .limit(10),
+    supabase
+      .from('site_settings' as any)
+      .select('key, value')
+      .in('key', ['hero_title', 'hero_subtitle', 'hero_button_text']),
   ]);
+
+  const rows = ((siteSettings || []) as unknown) as { key: string; value: string }[];
+  const heroSettings: Record<string, string> = {};
+  for (const { key, value } of rows) {
+    heroSettings[key] = value;
+  }
 
   return {
     featuredPosts: (featuredPosts || []) as PostWithRelations[],
     popularPosts: popularPosts || [],
     categories: categories || [],
+    hero_title: heroSettings.hero_title || 'Sefa Çam',
+    hero_subtitle: heroSettings.hero_subtitle || 'İçerik Üreticisi · YouTuber · Blogger',
+    hero_button_text: heroSettings.hero_button_text || 'Blog Yazıları',
   };
 }
 
@@ -78,7 +92,7 @@ async function getCategoryPosts(categorySlug: string) {
 }
 
 export default async function Home() {
-  const { featuredPosts, popularPosts, categories } = await getHomeData();
+  const { featuredPosts, popularPosts, categories, hero_title, hero_subtitle, hero_button_text } = await getHomeData();
 
   const categoryPostsData = await Promise.all(
     categories.slice(0, 3).map((cat) => getCategoryPosts(cat.slug))
@@ -167,7 +181,7 @@ export default async function Home() {
             className="mx-auto mb-4 max-w-xl text-lg font-medium text-text-secondary"
             style={{ letterSpacing: '0.15em', textTransform: 'uppercase', fontSize: '0.85rem' }}
           >
-            İçerik Üreticisi &nbsp;·&nbsp; YouTuber &nbsp;·&nbsp; Blogger
+            {hero_subtitle}
           </p>
 
           {/* Description */}
@@ -194,7 +208,7 @@ export default async function Home() {
               className="group flex items-center gap-2.5 rounded-2xl border border-primary/40 bg-primary/10 px-8 py-4 text-base font-bold text-primary transition-all hover:bg-primary hover:text-background hover:scale-105"
               style={{ backdropFilter: 'blur(8px)' }}
             >
-              Blog Yazıları
+              {hero_button_text}
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </div>

@@ -6,8 +6,8 @@ import { Users, Trash2, AlertCircle, Loader2, Mail, Calendar, CheckCircle } from
 interface Subscriber {
   id: string;
   email: string;
-  verified: boolean;
-  created_at: string;
+  is_active: boolean;
+  subscribed_at: string;
 }
 
 export default function SubscribersPage() {
@@ -147,7 +147,7 @@ export default function SubscribersPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      {subscriber.verified ? (
+                      {subscriber.is_active ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success">
                           <CheckCircle className="h-3 w-3" />
                           Doğrulanmış
@@ -160,7 +160,7 @@ export default function SubscribersPage() {
                       )}
                     </td>
                     <td className="px-6 py-4 text-sm text-text-secondary">
-                      {formatDate(subscriber.created_at)}
+                      {formatDate(subscriber.subscribed_at)}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <button

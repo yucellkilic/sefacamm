@@ -13,7 +13,7 @@ export async function GET() {
     const { data: subscribers, error } = await supabase
       .from('subscribers')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('subscribed_at', { ascending: false });
 
     if (error) throw error;
 

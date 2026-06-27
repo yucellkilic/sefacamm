@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/session';
-import { supabase } from '@/lib/supabase/client';
+import { supabaseAdmin as supabase } from '@/lib/supabase/admin';
 import { revalidatePath } from 'next/cache';
 
 // GET single post
@@ -89,6 +89,7 @@ export async function PUT(
         slug,
         excerpt: excerpt || '',
         content,
+        category,
         featured_image_url: featured_image_url || null,
         is_published: is_published || false,
         updated_at: new Date().toISOString(),
