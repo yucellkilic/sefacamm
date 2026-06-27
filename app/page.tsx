@@ -213,26 +213,7 @@ export default async function Home() {
             </Link>
           </div>
 
-          {/* Stats */}
-          <div className="mx-auto mt-20 grid max-w-2xl grid-cols-3 gap-8">
-            {[
-              { label: 'Makale', value: featuredPosts.length > 0 ? `${featuredPosts.length}+` : '10+' },
-              { label: 'YouTube', value: 'İçerik' },
-              { label: 'Instagram', value: 'Takipçi' },
-            ].map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div
-                  className="text-3xl font-black text-primary md:text-4xl"
-                  style={{ fontVariantNumeric: 'tabular-nums' }}
-                >
-                  {stat.value}
-                </div>
-                <div className="mt-1 text-sm font-medium text-text-secondary uppercase tracking-widest">
-                  {stat.label}
-                </div>
-              </div>
-            ))}
-          </div>
+
         </div>
 
         {/* Scroll indicator */}

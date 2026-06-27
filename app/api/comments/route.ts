@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const { data: comments, error } = await supabase
+    const { data: comments, error } = await supabaseAdmin
       .from('comments')
       .select('*')
       .eq('post_id', postId)
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert comment
-    const { data: comment, error } = await supabase
+    const { data: comment, error } = await supabaseAdmin
       .from('comments')
       .insert([{ post_id, author_name, author_email, content, is_approved: false }])
       .select()

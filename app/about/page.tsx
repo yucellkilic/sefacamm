@@ -64,19 +64,13 @@ export default async function AboutPage() {
               }}
             >
               <div className="h-full w-full overflow-hidden rounded-full bg-background">
-                {author?.avatar_url ? (
-                  <Image
-                    src={author.avatar_url}
-                    alt={author.name}
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center text-4xl font-black text-primary">
-                    SC
-                  </div>
-                )}
+                <Image
+                  src="/logo.png"
+                  alt={author?.name || 'Sefa Çam'}
+                  fill
+                  className="object-cover"
+                  priority
+                />
               </div>
             </div>
           </div>
